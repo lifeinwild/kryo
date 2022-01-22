@@ -59,7 +59,15 @@ public class IdentityObjectIntMap<K> extends ObjectIntMap<K> {
 	}
 
 	protected int place (K item) {
-		return (int)(System.identityHashCode(item) * 0x9E3779B97F4A7C15L >>> shift);
+		return System.identityHashCode(item) & mask;
+	}
+
+	public int get (K key, int defaultValue) {
+		for (int i = place(key);; i = i + 1 & mask) {
+			K other = keyTable[i];
+			if (other == null) return defaultValue;
+			if (other == key) return valueTable[i];
+		}
 	}
 
 	int locateKey (K key) {
